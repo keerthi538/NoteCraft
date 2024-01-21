@@ -23,15 +23,21 @@ function NoteEditor({ selectedNote, saveNote }) {
     setEditMode(false);
   };
 
-  const handleKeyDown = (e) => {
+  const handleTextAreaKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent the default behavior of Enter key in a textarea
       setNoteContent((prevContent) => prevContent + "\n- "); // Add a hyphen and newline
     }
   };
 
+  const handleTitleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevent the default behavior of Enter key in a textarea
+      handleSave();
+    }
+  };
+
   useEffect(() => {
-    console.log("selectedNote changed", selectedNote);
     setNoteContent(selectedNote?.content || "");
     setNoteTitle(selectedNote?.title || "");
   }, [selectedNote]);
@@ -43,11 +49,7 @@ function NoteEditor({ selectedNote, saveNote }) {
       {!editMode ? (
         <div className="note-title">
           <h2>{noteTitle}</h2>
-          <span
-            className="link"
-            onClick={() => setEditMode(true)}
-            style={{ cursor: "pointer", color: "#61dafb" }}
-          >
+          <span className="link" onClick={() => setEditMode(true)}>
             Edit
           </span>
         </div>
@@ -57,6 +59,7 @@ function NoteEditor({ selectedNote, saveNote }) {
             type="text"
             value={noteTitle}
             onChange={handleTitleChange}
+            onKeyDown={handleTitleKeyDown}
             placeholder="Enter note title"
             className="title-input"
           />
@@ -69,7 +72,7 @@ function NoteEditor({ selectedNote, saveNote }) {
       <textarea
         value={noteContent}
         onChange={handleNoteChange}
-        onKeyDown={handleKeyDown}
+        onKeyDown={handleTextAreaKeyDown}
         placeholder="Start typing your note..."
         rows={10}
         cols={40}
@@ -84,7 +87,7 @@ function NoteEditor({ selectedNote, saveNote }) {
 
 NoteEditor.propTypes = {
   selectedNote: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
     lastUpdated: PropTypes.string.isRequired,
